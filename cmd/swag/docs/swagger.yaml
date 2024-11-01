@@ -1,0 +1,1152 @@
+basePath: /v1/2024
+definitions:
+  auth_dto.LoginCredentials:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  auth_dto.RegisterCredentials:
+    properties:
+      birthday:
+        type: string
+      email:
+        type: string
+      family_name:
+        type: string
+      name:
+        type: string
+      otp:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      phone_number:
+        type: string
+    required:
+    - birthday
+    - email
+    - family_name
+    - name
+    - otp
+    - password
+    - phone_number
+    type: object
+  auth_dto.VerifyEmailInput:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  comment_dto.CreateCommentInput:
+    properties:
+      content:
+        type: string
+      parent_id:
+        type: string
+      post_id:
+        type: string
+    required:
+    - content
+    - post_id
+    type: object
+  comment_dto.UpdateCommentInput:
+    properties:
+      content:
+        type: string
+    type: object
+  response.ErrResponse:
+    properties:
+      error:
+        $ref: '#/definitions/response.ErrResponseChild'
+    type: object
+  response.ErrResponseChild:
+    properties:
+      code:
+        type: integer
+      detail_err:
+        type: string
+      message:
+        type: string
+    type: object
+  response.PagingResponse:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.ResponseData:
+    properties:
+      code:
+        description: Status code
+        type: integer
+      data:
+        description: Data
+      message:
+        description: Status message
+        type: string
+      paging:
+        allOf:
+        - $ref: '#/definitions/response.PagingResponse'
+        description: Paging (optional)
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: pchuy4003@gmail.com
+    name: TEAM HKTP
+    url: https://github.com/poin4003/yourVibes_GoApi
+  description: This is a sample YourVibes backend server
+  termsOfService: https://github.com/poin4003/yourVibes_GoApi
+  title: API Documentation YourVibes backend
+  version: 1.0.0
+paths:
+  /comments/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve multiple comment filtered by various criteria.
+      parameters:
+      - description: Post ID to filter comment, get the first layer
+        in: query
+        name: post_id
+        required: true
+        type: string
+      - description: Filter by parent id, get the next layer
+        in: query
+        name: parent_id
+        type: string
+      - description: Limit of posts per page
+        in: query
+        name: limit
+        type: integer
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get many comment
+      tags:
+      - comment_user
+    post:
+      consumes:
+      - application/json
+      description: When user create comment or rep comment
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/comment_dto.CreateCommentInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Comment create comment
+      tags:
+      - comment_user
+  /comments/{comment_id}:
+    delete:
+      consumes:
+      - application/json
+      description: when user want to delete comment
+      parameters:
+      - description: comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: delete comment by ID
+      tags:
+      - comment_user
+    patch:
+      consumes:
+      - multipart/form-data
+      description: When user need to update information of comment
+      parameters:
+      - description: commentId
+        in: path
+        name: comment_id
+        required: true
+        type: string
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/comment_dto.UpdateCommentInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: update comment
+      tags:
+      - comment_user
+  /comments/like_comment/{comment_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve multiple user is like comment
+      parameters:
+      - description: comment ID to get user like comment
+        in: path
+        name: comment_id
+        required: true
+        type: string
+      - description: Limit of users per page
+        in: query
+        name: limit
+        type: integer
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User like comments
+      tags:
+      - like_comment
+    post:
+      consumes:
+      - application/json
+      description: When user like comment
+      parameters:
+      - description: comment ID to create like comment
+        in: path
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Like comment
+      tags:
+      - like_comment
+  /posts/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve multiple posts filtered by various criteria.
+      parameters:
+      - description: User ID to filter posts
+        in: query
+        name: user_id
+        type: string
+      - description: Filter by content
+        in: query
+        name: content
+        type: string
+      - description: Filter by location
+        in: query
+        name: location
+        type: string
+      - description: Filter by advertisement
+        in: query
+        name: is_advertisement
+        type: boolean
+      - description: Filter by creation time
+        in: query
+        name: created_at
+        type: string
+      - description: Which column to sort by
+        in: query
+        name: sort_by
+        type: string
+      - description: Order by descending if true
+        in: query
+        name: isDescending
+        type: boolean
+      - description: Limit of posts per page
+        in: query
+        name: limit
+        type: integer
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get many posts
+      tags:
+      - post_user
+    post:
+      consumes:
+      - multipart/form-data
+      description: When user create post
+      parameters:
+      - description: Content of the post
+        in: formData
+        name: content
+        type: string
+      - description: Privacy level
+        in: formData
+        name: privacy
+        type: string
+      - description: Location of the post
+        in: formData
+        name: location
+        type: string
+      - description: Media files for the post
+        in: formData
+        name: media
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Post create post
+      tags:
+      - post_user
+  /posts/{post_id}:
+    delete:
+      consumes:
+      - application/json
+      description: when user want to delete post
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: delete post by ID
+      tags:
+      - post_user
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a post by its unique ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get post by ID
+      tags:
+      - post_user
+    patch:
+      consumes:
+      - multipart/form-data
+      description: When user need to update information of post or update media
+      parameters:
+      - description: PostId
+        in: path
+        name: post_id
+        required: true
+        type: string
+      - description: Post content
+        in: formData
+        name: content
+        type: string
+      - description: Post privacy
+        in: formData
+        name: privacy
+        type: string
+      - description: Post location
+        in: formData
+        name: location
+        type: string
+      - description: Array of mediaIds you want to delete
+        in: formData
+        name: media_ids
+        type: integer
+      - description: Array of media you want to upload
+        in: formData
+        name: media
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: update post
+      tags:
+      - post_user
+  /posts/like_post/{post_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve multiple posts filtered by various criteria.
+      parameters:
+      - description: Post ID to get user like post
+        in: path
+        name: post_id
+        required: true
+        type: string
+      - description: Limit of posts per page
+        in: query
+        name: limit
+        type: integer
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User like posts
+      tags:
+      - like_post
+    post:
+      consumes:
+      - application/json
+      description: When user like post
+      parameters:
+      - description: Post ID to create like post
+        in: path
+        name: post_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Like Post
+      tags:
+      - like_post
+  /posts/share_post/{post_id}:
+    post:
+      consumes:
+      - multipart/form-data
+      description: When user want to share post of another user post's
+      parameters:
+      - description: PostId
+        in: path
+        name: post_id
+        required: true
+        type: string
+      - description: Content of the post
+        in: formData
+        name: content
+        type: string
+      - description: Privacy level
+        in: formData
+        name: privacy
+        type: string
+      - description: Location of the post
+        in: formData
+        name: location
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: share post
+      tags:
+      - post_share
+  /users/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve users based on filters such as name, email, phone number,
+        birthday, and created date. Supports pagination and sorting.
+      parameters:
+      - description: name to filter users
+        in: query
+        name: name
+        type: string
+      - description: Filter by email
+        in: query
+        name: email
+        type: string
+      - description: Filter by phone number
+        in: query
+        name: phone_number
+        type: string
+      - description: Filter by birthday
+        in: query
+        name: birthday
+        type: string
+      - description: Filter by creation day
+        in: query
+        name: created_at
+        type: string
+      - description: Sort by field
+        in: query
+        name: sort_by
+        type: string
+      - description: Sort in descending order
+        in: query
+        name: isDescending
+        type: boolean
+      - description: Number of results per page
+        in: query
+        name: limit
+        type: integer
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of users
+      tags:
+      - user_info
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Update various fields of the user profile including name, email,
+        phone number, birthday, and upload avatar and capwall images.
+      parameters:
+      - description: User's family name
+        in: formData
+        name: family_name
+        type: string
+      - description: User's given name
+        in: formData
+        name: name
+        type: string
+      - description: User's email address
+        in: formData
+        name: email
+        type: string
+      - description: User's phone number
+        in: formData
+        name: phone_number
+        type: string
+      - description: User's birthday
+        in: formData
+        name: birthday
+        type: string
+      - description: Upload user avatar image
+        in: formData
+        name: avatar_url
+        type: file
+      - description: Upload user capwall image
+        in: formData
+        name: capwall_url
+        type: file
+      - description: User privacy level
+        in: formData
+        name: privacy
+        type: string
+      - description: User biography
+        in: formData
+        name: biography
+        type: string
+      - description: 'Setting language '
+        in: formData
+        name: language_setting
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update user information
+      tags:
+      - user_info
+  /users/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a user by its unique ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get user by ID
+      tags:
+      - user_info
+  /users/friends/:
+    get:
+      description: Get a list of friend
+      parameters:
+      - description: limit on page
+        in: query
+        name: limit
+        type: integer
+      - description: current page
+        in: query
+        name: page
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of friend
+      tags:
+      - user_friend
+  /users/friends/{friend_id}/:
+    delete:
+      description: unfriend
+      parameters:
+      - description: User id you want to unfriend
+        in: path
+        name: friend_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: unfriend
+      tags:
+      - user_friend
+  /users/friends/friend_request:
+    get:
+      description: Get a list of friend request
+      parameters:
+      - description: limit on page
+        in: query
+        name: limit
+        type: integer
+      - description: current page
+        in: query
+        name: page
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of friend request
+      tags:
+      - user_friend
+  /users/friends/friend_request/{friend_id}/:
+    delete:
+      description: Undo add friend request
+      parameters:
+      - description: User id you want to undo add request
+        in: path
+        name: friend_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Undo add friend request
+      tags:
+      - user_friend
+    post:
+      description: Send add friend request to another people
+      parameters:
+      - description: User id you want to send add request
+        in: path
+        name: friend_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Send add friend request
+      tags:
+      - user_friend
+  /users/friends/friend_response/{friend_id}/:
+    delete:
+      description: Delete friend request
+      parameters:
+      - description: User id you want to reject friend request
+        in: path
+        name: friend_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Reject friend request
+      tags:
+      - user_friend
+    post:
+      description: Accept friend request
+      parameters:
+      - description: User id you want to accept friend request
+        in: path
+        name: friend_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Accept friend request
+      tags:
+      - user_friend
+  /users/login/:
+    post:
+      consumes:
+      - application/json
+      description: When user login
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/auth_dto.LoginCredentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      summary: User login
+      tags:
+      - user_auth
+  /users/new_feeds/:
+    get:
+      description: Get a list of new feed
+      parameters:
+      - description: limit on page
+        in: query
+        name: limit
+        type: integer
+      - description: current page
+        in: query
+        name: page
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of new feed
+      tags:
+      - user_new_feed
+  /users/new_feeds/{post_id}/:
+    delete:
+      description: delete new feeds
+      parameters:
+      - description: post_id you want to delete over your newfeed
+        in: path
+        name: post_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteNewFeeds
+      tags:
+      - user_new_feed
+  /users/notifications:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Filter notifications by sender
+        in: query
+        name: from
+        type: string
+      - description: Filter notifications by type
+        in: query
+        name: notification_type
+        type: string
+      - description: Filter notifications created at this date
+        in: query
+        name: created_at
+        type: string
+      - description: Sort notifications by this field
+        in: query
+        name: sort_by
+        type: string
+      - description: Sort notifications in descending order
+        in: query
+        name: isDescending
+        type: boolean
+      - description: Limit the number of notifications returned
+        in: query
+        name: limit
+        type: integer
+      - description: 'Pagination: page number'
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get notifications
+      tags:
+      - user_notification
+  /users/notifications/:
+    patch:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update all notification status to false
+      tags:
+      - user_notification
+  /users/notifications/{notification_id}:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Notification ID
+        in: path
+        name: notification_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update notification status to false
+      tags:
+      - user_notification
+  /users/notifications/ws/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Establish a WebSocket connection for real-time notifications
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: WebSocket connection established
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      summary: Connect to WebSocket
+      tags:
+      - user_notification
+  /users/register/:
+    post:
+      consumes:
+      - application/json
+      description: When user registration
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/auth_dto.RegisterCredentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      summary: User Registration
+      tags:
+      - user_auth
+  /users/verifyemail/:
+    post:
+      consumes:
+      - application/json
+      description: Before user registration
+      parameters:
+      - description: input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/auth_dto.VerifyEmailInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      summary: User verify email
+      tags:
+      - user_auth
+securityDefinitions:
+  ApiKeyAuth:
+    description: Token without 'Bearer ' prefix
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
