@@ -1,0 +1,37 @@
+server:
+  port: 8000
+  mode: "dev"
+postgresql:
+  host: ep-still-hat-a1f7trde.ap-southeast-1.aws.neon.tech
+  port: 5432
+  username: yourvibes_db_owner
+  password: W1aUPhETrec5
+  dbname: yourvibes_db
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: 3600
+  ssl_mode: require
+logger:
+  log_level: debug
+  file_log_name: "./storages/logs/dev.001.log"
+  max_size: 500
+  max_backup: 3
+  max_age: 10
+  compress: true
+redis:
+  host: redis-12068.c54.ap-northeast-1-2.ec2.redns.redis-cloud.com
+  port: 12068
+  password: NeQg8lcGCPLzjUbSdSCCbIIWntCJCdWq
+  database: 0
+authentication:
+  jwtSecretKey: yourvibesSuperSecretKey
+cloudinary:
+  cloud_name: dkf51e57t
+  api_key: 238396968984682
+  api_secret_key: WRS5sVfgYzYwHeFDG0IyQZE9ZSE
+  folder: yourVibes
+mail_service:
+  smtp_host: smtp.gmail.com
+  smtp_port: 587
+  smtp_username: ticketplaza1000@gmail.com
+  smtp_password: "mejj hvui xbkx vluo"
