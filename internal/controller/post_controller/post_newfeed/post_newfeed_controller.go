@@ -1,4 +1,4 @@
-package user_user
+package post_newfeed
 
 import (
 	"github.com/gin-gonic/gin"
@@ -10,10 +10,10 @@ import (
 	"net/http"
 )
 
-type cUserNewFeed struct{}
+type cPostNewFeed struct{}
 
-func NewUserNewFeedController() *cUserNewFeed {
-	return &cUserNewFeed{}
+func NewPostNewFeedController() *cPostNewFeed {
+	return &cPostNewFeed{}
 }
 
 // DeleteNewFeed godoc
@@ -25,7 +25,7 @@ func NewUserNewFeedController() *cUserNewFeed {
 // @Failure 500 {object} response.ErrResponse
 // @Security ApiKeyAuth
 // @Router /users/new_feeds/{post_id}/ [delete]
-func (c *cUserNewFeed) DeleteNewFeed(ctx *gin.Context) {
+func (c *cPostNewFeed) DeleteNewFeed(ctx *gin.Context) {
 	// 1. Get post id from param path
 	postIdStr := ctx.Param("post_id")
 	postId, err := uuid.Parse(postIdStr)
@@ -61,7 +61,7 @@ func (c *cUserNewFeed) DeleteNewFeed(ctx *gin.Context) {
 // @Failure 500 {object} response.ErrResponse
 // @Security ApiKeyAuth
 // @Router /users/new_feeds/ [get]
-func (c *cUserNewFeed) GetNewFeeds(ctx *gin.Context) {
+func (c *cPostNewFeed) GetNewFeeds(ctx *gin.Context) {
 	// 1. Validate and get query object from query
 	var query query_object.NewFeedQueryObject
 

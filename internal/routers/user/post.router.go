@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/poin4003/yourVibes_GoApi/global"
 	"github.com/poin4003/yourVibes_GoApi/internal/controller/post_controller/post_user"
+	"github.com/poin4003/yourVibes_GoApi/internal/controller/post_controller/post_newfeed"
 	"github.com/poin4003/yourVibes_GoApi/internal/middlewares/authentication"
 )
 
@@ -14,6 +15,7 @@ func (pr *PostRouter) InitPostRouter(Router *gin.RouterGroup) {
 	postUserController := post_user.NewPostUserController(global.Rdb)
 	postShareController := post_user.NewPostShareController()
 	postLikeController := post_user.NewPostLikeController(global.Rdb)
+	postNewfeedController := post_newfeed.NewPostNewFeedController()
 	//userRouterPublic := Router.Group("/posts")
 	//{
 	//}
@@ -35,5 +37,9 @@ func (pr *PostRouter) InitPostRouter(Router *gin.RouterGroup) {
 
 		// post_share
 		postRouterPrivate.POST("/share_post/:post_id", postShareController.SharePost)
+
+		// user_new_feed
+		postRouterPrivate.DELETE("/new_feeds/:post_id", postNewfeedController.DeleteNewFeed)
+		postRouterPrivate.GET("/new_feeds/", postNewfeedController.GetNewFeeds)
 	}
 }
